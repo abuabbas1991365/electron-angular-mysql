@@ -1,0 +1,168 @@
+<mat-card style='margin-top:-2%'>
+
+
+  <mat-card-content>
+   <div *ngIf="(toggleField=='searchMode') else (toggleField=='addMode')? showAddMode:((toggleField=='editMode')? showEditMode : showResMode) ">
+  <form >
+     <h2 class="head-font" style="margin-top: -1%;position: absolute;">user master information:</h2>
+    <span matTooltip="Add New">
+       <button mat-mini-fab  color="warn" style="margin-left:96% ">
+       <mat-icon style='color: white' (click)="toggle('addMode');refitem('refmode')" svgIcon="add" ></mat-icon>
+  </button>
+
+      <mat-icon ></mat-icon>
+    </span> 
+  <mat-form-field >
+  <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search By">
+</mat-form-field> 
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container matColumnDef="title">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> title </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.title}} </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="ViruthuName">
+    <th  class="head-font" mat-header-cell *matHeaderCellDef> Viruthu Name </th>
+    <td mat-cell *matCellDef="let element"  [style.color]="element.color"> {{element.ViruthuName}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="date">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> date </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.date | date: 'dd/MM/yyyy'}} </td>
+  </ng-container>
+ <ng-container matColumnDef="Address">
+    <th class="head-font" mat-header-cell *matHeaderCellDef>Address</th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.Address}} </td>
+  </ng-container>
+
+ <ng-container matColumnDef="Status">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.status}} </td>
+  </ng-container>
+
+ <ng-container matColumnDef="Mobileno">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> Mobile no </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.Mobileno}} </td>
+  </ng-container>
+   <ng-container matColumnDef="Password">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> Password </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.Password}} </td>
+  </ng-container>  
+   <ng-container matColumnDef="email">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> email </th>
+    <td mat-cell *matCellDef="let element" [style.color]="element.color"> {{element.email}} </td>
+  </ng-container>  
+   <ng-container matColumnDef="Action">
+    <th class="head-font" mat-header-cell *matHeaderCellDef> Action </th>
+    <td mat-cell *matCellDef="let element"> 
+      <span matTooltip="Edit">
+            <button mat-icon-button (click)="toggle('editMode');geteditinfo(element.email,element.Mobileno,element.Password,element.Address,element.date,element.ViruthuName,element.title,element.status)">
+              <mat-icon color="primary" svgIcon="edit"></mat-icon>
+            </button>
+          </span>
+            <span matTooltip="Delete">
+            <button mat-icon-button (click)="deleteDoc(element.email,element.status)">
+              <mat-icon color="primary" svgIcon="delete"></mat-icon>
+            </button>
+          </span>
+  </td>
+  </ng-container>  
+
+  
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #showAddMode>
+  <form [formGroup]=createForm class="create-form">
+   <div>
+      <mat-card-actions align="start">
+        <button type="submit" (click)="addIssue(title.value,ViruthuName.value,date.value,Address.value,Password.value,Mobileno.value,EmailId.value)" 
+     [disabled]="createForm.pristine || createForm.invalid" mat-raised-button color="primary">Save</button>
+        <button type="reset" (click)="this.createForm.reset();" mat-raised-button [disabled]="!createForm.valid" color="primary">Clear</button>
+       
+        <span class="small-spacer" style="margin-left: 68%;" ></span>
+        <span matTooltip="Show Recent Results">
+        <mat-icon color="primary" (click)="toggle('searchMode');getData();" svgIcon="cached"></mat-icon>
+        </span>
+      </mat-card-actions>
+
+    <h2 class="head-font">person detail information:</h2><br>
+    <mat-form-field  class="emp-width">
+        <input matInput placeholder="User Name"formControlName="title"  #title >
+      </mat-form-field >
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="Viruthu Name" formControlName="ViruthuName" #ViruthuName >
+      </mat-form-field>
+       <mat-form-field class="emp-width">
+      <!--  <input matInput placeholder="Viruthu Date" [min]="minDate" [max]="maxDate"  formControlName="date"  type="date" #date > -->
+          <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker"  formControlName="date" placeholder="Choose a date" #date>
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+
+      </mat-form-field>
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="City"formControlName="Address"  #Address>
+      </mat-form-field>
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="Email Id"  formControlName="EmailId" #EmailId>
+      </mat-form-field>
+     <mat-form-field class="emp-width">
+        <input matInput placeholder="Password" formControlName="Password" [type]="hide ? 'password' : 'text'" #Password>
+         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+  
+      </mat-form-field>
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="Mobile no" formControlName="Mobileno" #Mobileno>
+      </mat-form-field>
+    </div>
+  </form>
+</ng-template>
+<ng-template #showResMode>
+ 
+</ng-template>
+
+<ng-template #showEditMode>
+    <form [formGroup]=createForm class="create-form">
+   <div>
+      <mat-card-actions align="start">
+        <button type="submit" (click)="SaveEditinfo(title.value,ViruthuName.value,date.value,Address.value,Password.value,Mobileno.value)" 
+     [disabled]="createForm.pristine || createForm.invalid" mat-raised-button color="primary">Save</button>
+        <span class="small-spacer" style="margin-left: 75%;" ></span>
+        <span matTooltip="Show Recent Results">
+          <mat-icon color="primary" (click)="toggle('searchMode');getData();" svgIcon="cached"></mat-icon>
+        </span>
+      </mat-card-actions>
+      <h2 class="head-font">person Edit information:</h2><br>
+ <mat-form-field  class="emp-width" >
+     <input matInput placeholder="User Name"formControlName="title"  #title [ngModel]="edittitle" >
+      </mat-form-field >
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="Viruthu Name" formControlName="ViruthuName" #ViruthuName [ngModel]="editViruthuName">
+      </mat-form-field>
+       <mat-form-field class="emp-width">
+       <input matInput placeholder="Viruthu Date" formControlName="date" type="date"  #date [ngModel]="editdate" >
+      </mat-form-field>
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="City"formControlName="Address"  #Address [ngModel]="editAddress">
+      </mat-form-field>
+     <mat-form-field class="emp-width">
+        <input matInput placeholder="Password" formControlName="Password" [type]="hide ? 'password' : 'text'" #Password [ngModel]="editPassword">
+         <mat-icon matSuffix (click)="hide = !hide" >{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+  
+      </mat-form-field>
+      <mat-form-field class="emp-width">
+        <input matInput placeholder="Mobile no" formControlName="Mobileno" #Mobileno [ngModel]="editMobileno">
+      </mat-form-field>
+    </div>
+  </form>
+</ng-template>
+
+
